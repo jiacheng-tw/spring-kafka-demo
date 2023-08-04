@@ -1,0 +1,12 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    security:
+      protocol: PLAINTEXT
+    producer:
+      retries: 3
+    consumer:
+      max-poll-records: 1
+    listener:
+      ack-count: 1
+      log-container-config: true
