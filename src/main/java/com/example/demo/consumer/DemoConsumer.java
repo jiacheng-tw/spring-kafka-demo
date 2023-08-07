@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DemoConsumer {
 
-    @KafkaListener(id = "demo-consumer-02", topics = {"topic-02"})
+    @KafkaListener(id = "${demo.kafka.topic2.consumer-id}",
+            topics = {"${demo.kafka.topic2.name}"})
     public void listen(@Payload String value,
                        @Header(KafkaHeaders.RECEIVED_KEY) String key,
                        @Header(KafkaHeaders.OFFSET) String offset) {

@@ -10,3 +10,14 @@ spring:
     listener:
       ack-count: 1
       log-container-config: true
+
+demo:
+  kafka:
+    topic-1:
+      name: topic-01
+      partitions: 1
+      consumer-id: demo-consumer-01
+    topic-2:
+      name: topic-02
+      partitions: 2
+      consumer-id: demo-consumer-02

@@ -5,6 +5,8 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -23,13 +25,16 @@ import java.util.Map;
 @Slf4j
 @EnableKafka
 @Configuration
+@EnableConfigurationProperties(DemoKafkaProperties.class)
 public class KafkaConfig {
 
     @Bean
-    public NewTopics kafkaTopics() {
+    public NewTopics kafkaTopics(DemoKafkaProperties demoKafkaProperties) {
         return new NewTopics(
-                TopicBuilder.name("topic-01").build(),
-                TopicBuilder.name("topic-02").partitions(2).build()
+                TopicBuilder.name(demoKafkaProperties.getTopic1().name())
+                        .partitions(demoKafkaProperties.getTopic1().partitions()).build(),
+                TopicBuilder.name(demoKafkaProperties.getTopic2().name())
+                        .partitions(demoKafkaProperties.getTopic2().partitions()).build()
         );
     }
 
@@ -43,17 +48,19 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaMessageListenerContainer<String, String> myKafkaMessageListenerContainer() {
+    public KafkaMessageListenerContainer<String, String> myKafkaMessageListenerContainer(
+            @Value("${spring.kafka.bootstrap-servers:localhost:9092}") String bootstrapServers,
+            DemoKafkaProperties demoKafkaProperties) {
         Map<String, Object> consumerConfigs = Map.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
+                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
         );
         var kafkaConsumerFactory = new DefaultKafkaConsumerFactory<String, String>(consumerConfigs);
 
-        var containerProperties = new ContainerProperties("topic-01");
+        var containerProperties = new ContainerProperties(demoKafkaProperties.getTopic1().name());
         containerProperties.setCommitLogLevel(LogIfLevelEnabled.Level.INFO);
-        containerProperties.setGroupId("demo-consumer-01");
+        containerProperties.setGroupId(demoKafkaProperties.getTopic1().consumerId());
         containerProperties.setMessageListener(
                 (MessageListener<String, String>) consumerRecord -> log.info("Kafka receive new message: {}", consumerRecord));
 
