@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 
@@ -21,6 +22,7 @@ public class SpringKafkaDemoApplication {
     }
 
     @Bean
+    @Profile("test")
     ApplicationRunner myApplicationRunner(ApplicationContext context, DemoProducer demoProducer) {
         return args -> {
             log.info("KafkaTemplate beans: {}", Arrays.toString(context.getBeanNamesForType(KafkaTemplate.class)));
