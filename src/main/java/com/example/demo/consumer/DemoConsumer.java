@@ -1,5 +1,6 @@
 package com.example.demo.consumer;
 
+import com.example.demo.repository.DemoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,11 +14,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DemoConsumer {
 
+    private final DemoRepository<String, String> demoRepository;
+
     @KafkaListener(id = "${demo.kafka.topic2.consumer-id}",
             topics = {"${demo.kafka.topic2.name}"})
     public void listen(@Payload String value,
                        @Header(KafkaHeaders.RECEIVED_KEY) String key,
                        @Header(KafkaHeaders.OFFSET) String offset) {
         log.info("Kafka receive new message: {key: {}, value: {}, offset: {}}", key, value, offset);
+        demoRepository.save(key, value);
     }
 }
