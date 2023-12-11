@@ -42,7 +42,7 @@ class DemoProducerTest {
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerConfigs);
-        ContainerProperties containerProperties = new ContainerProperties("topic-for-sync", "topic-for-async");
+        ContainerProperties containerProperties = new ContainerProperties("topic-for-sync", "topic-for-async", "topic-for-request", "topic-for-reply");
         kafkaContainer = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
 
         consumerRecords = new LinkedBlockingDeque<>(3);
@@ -82,5 +82,23 @@ class DemoProducerTest {
         assertThat(record.topic()).isEqualTo("topic-for-async");
         assertThat(record.key()).isAlphanumeric();
         assertThat(record.value()).isEqualTo("my test message to topic for async");
+    }
+
+    @Test
+    void shouldSendToTopicAndReply() throws InterruptedException {
+        consumerRecords.clear();
+        demoProducer.sendToTopic3WithReplying("my test message to topic for request");
+        Thread.sleep(1000L);
+
+        ConsumerRecord<String, String> requestRecord = consumerRecords.poll();
+        assertThat(requestRecord).isNotNull();
+        assertThat(requestRecord.topic()).isEqualTo("topic-for-request");
+        assertThat(requestRecord.key()).isAlphanumeric();
+        assertThat(requestRecord.value()).isEqualTo("my test message to topic for request");
+
+        ConsumerRecord<String, String> replyRecord = consumerRecords.poll();
+        assertThat(replyRecord).isNotNull();
+        assertThat(replyRecord.topic()).isEqualTo("topic-for-reply");
+        assertThat(replyRecord.value()).isEqualTo("Reply message of my test message to topic for request");
     }
 }

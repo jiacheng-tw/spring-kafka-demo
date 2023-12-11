@@ -4,6 +4,7 @@ import com.example.demo.repository.DemoRepository;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,6 +16,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +47,7 @@ class DemoConsumerTest {
 
     @Test
     void shouldConsumeRecordFromTopic() throws InterruptedException {
-        var sendResult = kafkaProducer.send(new ProducerRecord<>("topic-for-async", "test-key", "my test value"));
+        Future<RecordMetadata> sendResult = kafkaProducer.send(new ProducerRecord<>("topic-for-async", "test-key", "my test value"));
         Thread.sleep(1000L);
 
         assertThat(sendResult).isDone();
