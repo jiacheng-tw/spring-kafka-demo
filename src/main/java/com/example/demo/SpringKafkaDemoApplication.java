@@ -29,9 +29,9 @@ public class SpringKafkaDemoApplication {
             log.info("KafkaMessageListenerContainer beans: {}",
                     Arrays.toString(context.getBeanNamesForType(KafkaMessageListenerContainer.class)));
 
-            demoProducer.syncSendToTopic1("Hello, topic-01");
-            demoProducer.asyncSendToTopic2("Hello, topic-02");
-            demoProducer.sendToTopic3WithReplying("Hello, topic-03");
+            demoProducer.syncSendToTopic1("Hello, topic-for-sync");
+            demoProducer.asyncSendToTopic2("Hello, topic-for-async");
+            demoProducer.sendToTopic3WithReplying("Hello, topic-for-request");
         };
     }
 }

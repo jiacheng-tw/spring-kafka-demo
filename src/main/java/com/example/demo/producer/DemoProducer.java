@@ -27,15 +27,15 @@ public class DemoProducer {
     private final DemoKafkaProperties demoKafkaProperties;
 
     public void syncSendToTopic1(String value) {
-        syncSendKafka(demoKafkaProperties.getTopic1().name(), Long.toString(System.currentTimeMillis()), value);
+        syncSendKafka(demoKafkaProperties.getTopicName("sync"), Long.toString(System.currentTimeMillis()), value);
     }
 
     public void asyncSendToTopic2(String value) {
-        asyncSendKafka(demoKafkaProperties.getTopic2().name(), Long.toString(System.currentTimeMillis()), value);
+        asyncSendKafka(demoKafkaProperties.getTopicName("async"), Long.toString(System.currentTimeMillis()), value);
     }
 
     public void sendToTopic3WithReplying(String value) {
-        sendToTopicReplying(demoKafkaProperties.getTopic3().name(), Long.toString(System.currentTimeMillis()), value);
+        sendToTopicReplying(demoKafkaProperties.getTopicName("request"), Long.toString(System.currentTimeMillis()), value);
     }
 
     private void syncSendKafka(String topic, String key, String value) {

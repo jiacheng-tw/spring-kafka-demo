@@ -6,27 +6,33 @@ spring:
       protocol: PLAINTEXT
     producer:
       retries: 3
+      acks: 1
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
       max-poll-records: 1
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
       ack-count: 1
       log-container-config: true
 
 demo:
   kafka:
-    topic-1:
-      name: topic-01
-      partitions: 1
-      consumer-id: demo-consumer-01
-    topic-2:
-      name: topic-02
-      partitions: 2
-      consumer-id: demo-consumer-02
-    topic-3:
-      name: topic-03
-      partitions: 1
-      consumer-id: demo-consumer-03
-    topic-4:
-      name: topic-04
-      partitions: 1
-      consumer-id: demo-consumer-04
+    topics:
+      - key: sync
+        name: topic-for-sync
+        partitions: 1
+        consumer-id: demo-consumer-sync
+      - key: async
+        name: topic-for-async
+        partitions: 1
+        consumer-id: demo-consumer-async
+      - key: request
+        name: topic-for-request
+        partitions: 1
+        consumer-id: demo-consumer-request
+      - key: reply
+        name: topic-for-reply
+        partitions: 1
+        consumer-id: demo-consumer-reply

@@ -42,7 +42,7 @@ class DemoProducerTest {
                 ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerConfigs);
-        ContainerProperties containerProperties = new ContainerProperties("topic-01", "topic-02");
+        ContainerProperties containerProperties = new ContainerProperties("topic-for-sync", "topic-for-async");
         kafkaContainer = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
 
         consumerRecords = new LinkedBlockingDeque<>(3);
@@ -57,30 +57,30 @@ class DemoProducerTest {
     }
 
     @Test
-    void shouldSyncSendToTopic1() throws InterruptedException {
+    void shouldSyncSendToTopic() throws InterruptedException {
         consumerRecords.clear();
-        demoProducer.syncSendToTopic1("my test message to topic 01");
+        demoProducer.syncSendToTopic1("my test message to topic for sync");
         Thread.sleep(1000L);
 
         ConsumerRecord<String, String> record = consumerRecords.poll();
 
         assertThat(record).isNotNull();
-        assertThat(record.topic()).isEqualTo("topic-01");
+        assertThat(record.topic()).isEqualTo("topic-for-sync");
         assertThat(record.key()).isAlphanumeric();
-        assertThat(record.value()).isEqualTo("my test message to topic 01");
+        assertThat(record.value()).isEqualTo("my test message to topic for sync");
     }
 
     @Test
-    void shouldAsyncSendToTopic2() throws InterruptedException {
+    void shouldAsyncSendToTopic() throws InterruptedException {
         consumerRecords.clear();
-        demoProducer.asyncSendToTopic2("my test message to topic 02");
+        demoProducer.asyncSendToTopic2("my test message to topic for async");
         Thread.sleep(1000L);
 
         ConsumerRecord<String, String> record = consumerRecords.poll();
 
         assertThat(record).isNotNull();
-        assertThat(record.topic()).isEqualTo("topic-02");
+        assertThat(record.topic()).isEqualTo("topic-for-async");
         assertThat(record.key()).isAlphanumeric();
-        assertThat(record.value()).isEqualTo("my test message to topic 02");
+        assertThat(record.value()).isEqualTo("my test message to topic for async");
     }
 }

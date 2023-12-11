@@ -18,7 +18,7 @@ public class DemoConsumer {
 
     private final DemoRepository<String, String> demoRepository;
 
-    @KafkaListener(id = "${demo.kafka.topic2.consumer-id}", topics = {"${demo.kafka.topic2.name}"})
+    @KafkaListener(id = "${demo.kafka.topics[1].consumer-id}", topics = {"${demo.kafka.topics[1].name}"})
     public void listen(@Payload String value,
                        @Header(KafkaHeaders.RECEIVED_KEY) String key,
                        @Header(KafkaHeaders.OFFSET) String offset) {
@@ -26,7 +26,7 @@ public class DemoConsumer {
         demoRepository.save(key, value);
     }
 
-    @KafkaListener(id = "${demo.kafka.topic3.consumer-id}", topics = {"${demo.kafka.topic3.name}"})
+    @KafkaListener(id = "${demo.kafka.topics[2].consumer-id}", topics = {"${demo.kafka.topics[2].name}"})
     @SendTo
     public String listenAndReply(ConsumerRecord<String, String> consumerRecord) {
         log.info("Kafka receive new message and reply: [key: {}, value: {}, offset: {}]",
