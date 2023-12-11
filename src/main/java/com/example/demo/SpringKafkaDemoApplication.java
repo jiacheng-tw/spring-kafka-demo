@@ -31,6 +31,7 @@ public class SpringKafkaDemoApplication {
 
             demoProducer.syncSendToTopic1("Hello, topic-01");
             demoProducer.asyncSendToTopic2("Hello, topic-02");
+            demoProducer.sendToTopic3WithReplying("Hello, topic-03");
         };
     }
 }

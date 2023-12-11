@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaAdmin.NewTopics;
@@ -18,6 +19,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
+import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.support.LogIfLevelEnabled;
 
 import java.util.Map;
@@ -34,7 +36,11 @@ public class KafkaConfig {
                 TopicBuilder.name(demoKafkaProperties.getTopic1().name())
                         .partitions(demoKafkaProperties.getTopic1().partitions()).build(),
                 TopicBuilder.name(demoKafkaProperties.getTopic2().name())
-                        .partitions(demoKafkaProperties.getTopic2().partitions()).build()
+                        .partitions(demoKafkaProperties.getTopic2().partitions()).build(),
+                TopicBuilder.name(demoKafkaProperties.getTopic3().name())
+                        .partitions(demoKafkaProperties.getTopic3().partitions()).build(),
+                TopicBuilder.name(demoKafkaProperties.getTopic4().name())
+                        .partitions(demoKafkaProperties.getTopic4().partitions()).build()
         );
     }
 
@@ -45,6 +51,21 @@ public class KafkaConfig {
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class
         );
         return new KafkaTemplate<>(producerFactory, configOverrides);
+    }
+
+    @Bean
+    public ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate(
+            ProducerFactory<String, String> producerFactory,
+            ConcurrentKafkaListenerContainerFactory<String, String> containerFactory,
+            KafkaTemplate<String, String> stringKafkaTemplate,
+            DemoKafkaProperties demoKafkaProperties) {
+        containerFactory.setReplyTemplate(stringKafkaTemplate);
+
+        var repliesContainer = containerFactory.createContainer(demoKafkaProperties.getTopic4().name());
+        repliesContainer.getContainerProperties().setGroupId(demoKafkaProperties.getTopic4().consumerId());
+        repliesContainer.setAutoStartup(false);
+
+        return new ReplyingKafkaTemplate<>(producerFactory, repliesContainer);
     }
 
     @Bean

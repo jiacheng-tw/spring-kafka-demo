@@ -13,5 +13,9 @@ public class DemoKafkaProperties {
 
     private final TopicProperties topic2;
 
+    private final TopicProperties topic3;
+
+    private final TopicProperties topic4;
+
     public record TopicProperties(String name, Integer partitions, String consumerId) {}
 }

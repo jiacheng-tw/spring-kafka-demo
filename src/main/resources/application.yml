@@ -1,3 +1,4 @@
+
 spring:
   kafka:
     bootstrap-servers: localhost:9092
@@ -21,3 +22,11 @@ demo:
       name: topic-02
       partitions: 2
       consumer-id: demo-consumer-02
+    topic-3:
+      name: topic-03
+      partitions: 1
+      consumer-id: demo-consumer-03
+    topic-4:
+      name: topic-04
+      partitions: 1
+      consumer-id: demo-consumer-04
